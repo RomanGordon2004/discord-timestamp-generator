@@ -104,23 +104,6 @@ app.post('/interactions', async function (req, res) {
     }
 
     if (name === 'generate') {
-      // const date = data.options[0].value;
-      // const time = data.options[1].value;
-      // const format = data.options[2].value;
-      // const timezone = data.options[3].value;
-      //
-      // const offset = timezoneOffsets[timezone];
-      // const dateString = `${date} ${time}`
-      // const timestamp = dateTimeToTimestamp(dateString, offset, format)
-      //
-      // return res.send({
-      //   type: InteractionResponseType.CHANNEL_MESSAGE_WITH_SOURCE,
-      //   data: {
-      //     content: `\`${timestamp}\``,
-      //     flags: "64"
-      //   },
-      // })
-
       return res.send({
         type: InteractionResponseType.MODAL,
         data: {
