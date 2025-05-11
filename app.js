@@ -159,6 +159,25 @@ app.post('/interactions', async function (req, res) {
         }
       })
     }
+
+    if (name === 'generate-inline') {
+      const date = data.options[0].value;
+      const time = data.options[1].value;
+      const format = data.options[2].value;
+      const timezone = data.options[3].value;
+
+      const offset = timezoneOffsets[timezone];
+      const dateString = `${date} ${time}`
+      const timestamp = dateTimeToTimestamp(dateString, offset, false, format)
+
+      return res.send({
+        type: InteractionResponseType.CHANNEL_MESSAGE_WITH_SOURCE,
+        data: {
+          content: `\`${timestamp}\``,
+          flags: "64"
+        },
+      })
+    }
   }
 
   if (type === InteractionType.MODAL_SUBMIT) {
@@ -276,7 +295,7 @@ function timeToTimestamp(time, offset) {
   return `<t:${timeStamp}:t>`;
 }
 
-function dateTimeToTimestamp(dateTime, offset, raw = false) {
+function dateTimeToTimestamp(dateTime, offset, raw = false, format = "f") {
   const [datePart, timePart] = dateTime.split(' ');
   const [day, month, year] = datePart.split('/').map(Number);
   const [hour, minute] = timePart.split(':').map(Number);
@@ -291,7 +310,7 @@ function dateTimeToTimestamp(dateTime, offset, raw = false) {
     return timeStamp;
   }
 
-  return `<t:${timeStamp}:f>`;
+  return `<t:${timeStamp}:${format}>`;
 }
 
 function dateToTimestamp(date, offset) {
