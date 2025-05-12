@@ -6,7 +6,7 @@ const DYNAMIC_TIME = {
   name: 'timestamp-time-only',
   type: 1,
   description: 'Send a message with automatically generated timestamps, format: {HH:mm}',
-  integration_types: [1],
+  integration_types: [0, 1],
   contexts: [0, 1, 2],
   options: [
     {
@@ -56,7 +56,7 @@ const DYNAMIC_DATETIME = {
   name: 'timestamp',
   type: 1,
   description: 'Send a message with auto generated timestamps, formats: {DD/MM/YYYY HH:mm} & {DD/MM/YYYY} & {HH:mm}',
-  integration_types: [1],
+  integration_types: [0, 1],
   contexts: [0, 1, 2],
   options: [
     {
@@ -106,7 +106,7 @@ const CONVERT_MODAL = {
   name: 'generate',
   type: 1,
   description: 'Enter a date, time and timezone and receive a timestamp in return in a message only you can see!',
-  integration_types: [1],
+  integration_types: [0, 1],
   contexts: [0, 1, 2]
 }
 
@@ -115,7 +115,7 @@ const CONVERT_EPHEMERAL = {
   name: 'generate-inline',
   type: 1,
   description: 'Enter a date, time and timezone and receive a timestamp in return in a message only you can see!',
-  integration_types: [1],
+  integration_types: [0, 1],
   contexts: [0, 1, 2],
   options: [
     {

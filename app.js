@@ -32,7 +32,7 @@ const timezoneOffsetsUtc = {
 /**
  * Interactions endpoint URL where Discord will send HTTP requests
  */
-app.post('/interactions', async function (req, res) {
+app.post('/interactions', async function (req, reply) {
   // Interaction type and data
   const { type, data } = req.body;
 
@@ -40,7 +40,7 @@ app.post('/interactions', async function (req, res) {
    * Handle verification requests
    */
   if (type === InteractionType.PING) {
-    return res.send({ type: InteractionResponseType.PONG });
+    return reply.send({ type: InteractionResponseType.PONG });
   }
 
   // Log request bodies
@@ -65,7 +65,7 @@ app.post('/interactions', async function (req, res) {
         return timeToTimestamp(time, offset);
       })
 
-      return res.send({
+      return reply.send({
         type: InteractionResponseType.CHANNEL_MESSAGE_WITH_SOURCE,
         data: {
           content: `${convertedMessage}`
@@ -95,7 +95,7 @@ app.post('/interactions', async function (req, res) {
         return timeToTimestamp(time, offset);
       })
 
-      return res.send({
+      return reply.send({
         type: InteractionResponseType.CHANNEL_MESSAGE_WITH_SOURCE,
         data: {
           content: `${convertedMessage}`
@@ -104,7 +104,7 @@ app.post('/interactions', async function (req, res) {
     }
 
     if (name === 'generate') {
-      return res.send({
+      return reply.send({
         type: InteractionResponseType.MODAL,
         data: {
           custom_id: "generate-modal",
@@ -170,7 +170,7 @@ app.post('/interactions', async function (req, res) {
       const dateString = `${date} ${time}`
       const timestamp = dateTimeToTimestamp(dateString, offset, false, format)
 
-      return res.send({
+      return reply.send({
         type: InteractionResponseType.CHANNEL_MESSAGE_WITH_SOURCE,
         data: {
           content: `\`${timestamp}\``,
@@ -218,7 +218,7 @@ app.post('/interactions', async function (req, res) {
       }
 
       if (errors.length) {
-        return res.send({
+        return reply.send({
           type: InteractionResponseType.CHANNEL_MESSAGE_WITH_SOURCE,
           data: {
             content: `Your entry had invalid inputs:\n${errors.join("\n")}\nPlease use /generate again and provide valid values`,
@@ -232,7 +232,7 @@ app.post('/interactions', async function (req, res) {
       const offset = timezoneOffsetsUtc[timezone];
       const timestamp = dateTimeToTimestamp(dateString, offset, true);
 
-      return res.send({
+      return reply.send({
         type: InteractionResponseType.CHANNEL_MESSAGE_WITH_SOURCE,
         data: {
           embeds: [
