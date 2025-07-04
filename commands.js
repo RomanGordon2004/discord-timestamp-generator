@@ -1,6 +1,34 @@
 import 'dotenv/config';
 import { InstallGlobalCommands } from './utils.js';
 
+const timezoneChoices = [
+  { name: "UTC−11", value: "NUT" },
+  { name: "UTC−10", value: "HAST" },
+  { name: "UTC−09", value: "AKST" },
+  { name: "UTC−08", value: "PST" },
+  { name: "UTC-07 (Tango Time)", value: "MST" },
+  { name: "UTC−06", value: "CST" },
+  { name: "UTC−05", value: "EST" },
+  { name: "UTC−04", value: "AST" },
+  { name: "UTC−03", value: "ART" },
+  { name: "UTC−02", value: "BRST" },
+  { name: "UTC−01", value: "AZOT" },
+  { name: "UTC±00", value: "GMT" },
+  { name: "UTC+01", value: "CET" },
+  { name: "UTC+02", value: "EET" },
+  { name: "UTC+03", value: "MSK" },
+  { name: "UTC+04", value: "GST" },
+  { name: "UTC+05", value: "PKT" },
+  { name: "UTC+05:30", value: "IST" },
+  { name: "UTC+06", value: "BST" },
+  { name: "UTC+07", value: "THA" },
+  { name: "UTC+08", value: "CST8" },
+  { name: "UTC+09", value: "JST" },
+  { name: "UTC+10", value: "AEST" },
+  { name: "UTC+11", value: "SBT" },
+  { name: "UTC+12", value: "FJT" }
+];
+
 // Const generate timestamp
 const DYNAMIC_TIME = {
   name: 'timestamp-time-only',
@@ -20,33 +48,7 @@ const DYNAMIC_TIME = {
       name: "timezone",
       description: "Enter the timezone to convert into",
       required: true,
-      choices: [
-        { name: "UTC−11", value: "NUT" },
-        { name: "UTC−10", value: "HAST" },
-        { name: "UTC−09", value: "AKST" },
-        { name: "UTC−08", value: "PST" },
-        { name: "UTC−07", value: "MST" },
-        { name: "UTC−06", value: "CST" },
-        { name: "UTC−05", value: "EST" },
-        { name: "UTC−04", value: "AST" },
-        { name: "UTC−03", value: "ART" },
-        { name: "UTC−02", value: "BRST" },
-        { name: "UTC−01", value: "AZOT" },
-        { name: "UTC±00", value: "GMT" },
-        { name: "UTC+01", value: "CET" },
-        { name: "UTC+02", value: "EET" },
-        { name: "UTC+03", value: "MSK" },
-        { name: "UTC+04", value: "GST" },
-        { name: "UTC+05", value: "PKT" },
-        { name: "UTC+05:30", value: "IST" },
-        { name: "UTC+06", value: "BST" },
-        { name: "UTC+07", value: "THA" },
-        { name: "UTC+08", value: "CST8" },
-        { name: "UTC+09", value: "JST" },
-        { name: "UTC+10", value: "AEST" },
-        { name: "UTC+11", value: "SBT" },
-        { name: "UTC+12", value: "FJT" }
-      ]
+      choices: timezoneChoices
     }
   ]
 }
@@ -70,33 +72,7 @@ const DYNAMIC_DATETIME = {
       name: "timezone",
       description: "Enter the timezone to convert into",
       required: true,
-      choices: [
-        { name: "UTC−11", value: "NUT" },
-        { name: "UTC−10", value: "HAST" },
-        { name: "UTC−09", value: "AKST" },
-        { name: "UTC−08", value: "PST" },
-        { name: "UTC−07", value: "MST" },
-        { name: "UTC−06", value: "CST" },
-        { name: "UTC−05", value: "EST" },
-        { name: "UTC−04", value: "AST" },
-        { name: "UTC−03", value: "ART" },
-        { name: "UTC−02", value: "BRST" },
-        { name: "UTC−01", value: "AZOT" },
-        { name: "UTC±00", value: "GMT" },
-        { name: "UTC+01", value: "CET" },
-        { name: "UTC+02", value: "EET" },
-        { name: "UTC+03", value: "MSK" },
-        { name: "UTC+04", value: "GST" },
-        { name: "UTC+05", value: "PKT" },
-        { name: "UTC+05:30", value: "IST" },
-        { name: "UTC+06", value: "BST" },
-        { name: "UTC+07", value: "THA" },
-        { name: "UTC+08", value: "CST8" },
-        { name: "UTC+09", value: "JST" },
-        { name: "UTC+10", value: "AEST" },
-        { name: "UTC+11", value: "SBT" },
-        { name: "UTC+12", value: "FJT" }
-      ]
+      choices: timezoneChoices
     }
   ]
 }
@@ -127,7 +103,7 @@ const CONVERT_EPHEMERAL = {
     {
       type: 3,
       name: "time",
-      description: "Required format HH:mm",
+      description: "Required format HH:mm (Supports 12 and 24 hour time)",
       required: true
     },
     {
@@ -149,33 +125,7 @@ const CONVERT_EPHEMERAL = {
       name: "timezone",
       description: "Enter the timezone to convert from",
       required: true,
-      choices: [
-        { name: "UTC−11", value: "NUT" },
-        { name: "UTC−10", value: "HAST" },
-        { name: "UTC−09", value: "AKST" },
-        { name: "UTC−08", value: "PST" },
-        { name: "UTC−07", value: "MST" },
-        { name: "UTC−06", value: "CST" },
-        { name: "UTC−05", value: "EST" },
-        { name: "UTC−04", value: "AST" },
-        { name: "UTC−03", value: "ART" },
-        { name: "UTC−02", value: "BRST" },
-        { name: "UTC−01", value: "AZOT" },
-        { name: "UTC±00", value: "GMT" },
-        { name: "UTC+01", value: "CET" },
-        { name: "UTC+02", value: "EET" },
-        { name: "UTC+03", value: "MSK" },
-        { name: "UTC+04", value: "GST" },
-        { name: "UTC+05", value: "PKT" },
-        { name: "UTC+05:30", value: "IST" },
-        { name: "UTC+06", value: "BST" },
-        { name: "UTC+07", value: "THA" },
-        { name: "UTC+08", value: "CST8" },
-        { name: "UTC+09", value: "JST" },
-        { name: "UTC+10", value: "AEST" },
-        { name: "UTC+11", value: "SBT" },
-        { name: "UTC+12", value: "FJT" }
-      ]
+      choices: timezoneChoices
     }
   ]
 }

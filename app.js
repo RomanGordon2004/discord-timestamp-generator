@@ -29,6 +29,10 @@ const timezoneOffsetsUtc = {
   "UTC+11": 11, "UTC+12": 12, "UTC+12:45": 12.75, "UTC+13": 13, "UTC+14": 14
 };
 
+const dateRegex = "(0[1-9]|[12][0-9]|3[01])\\/(0[1-9]|1[0-2])\\/\\d{4}";
+const timeRegex = "(1[0-2]|0?[1-9]|[01]?\\d|2[0-3]):[0-5]\\d(?:\\s?(?:am|pm))?";
+const dateTimeRegex = `${dateRegex} ${timeRegex}`;
+
 /**
  * Interactions endpoint URL where Discord will send HTTP requests
  */
@@ -60,8 +64,9 @@ app.post('/interactions', async function (req, reply) {
 
       const offset = timezoneOffsets[timezone];
 
-      const convertedMessage = message.replace(/({\d{2}:\d{2}})/g, function (match) {
-        const time = match.substring(1,6);
+      const timeConvertedRegex = new RegExp(`({${timeRegex}})`, 'gi');
+      const convertedMessage = message.replace(timeConvertedRegex, function (match) {
+        const time = match.substring(1,match.length-1);
         return timeToTimestamp(time, offset);
       })
 
@@ -80,17 +85,20 @@ app.post('/interactions', async function (req, reply) {
 
       const offset = timezoneOffsets[timezone];
 
-      let convertedMessage = message.replace(/({\d{2}\/\d{2}\/\d{4} \d{2}:\d{2}})/g, function (match) {
+      const dateTimeConvertedRegex = new RegExp(`({${dateTimeRegex}})`, 'gi');
+      let convertedMessage = message.replace(dateTimeConvertedRegex, function (match) {
         const dateTime = match.substring(1, match.length-1);
         return dateTimeToTimestamp(dateTime, offset);
       })
 
-      convertedMessage = convertedMessage.replace(/({\d{2}\/\d{2}\/\d{4}})/g, function (match) {
+      const dateConvertedRegex = new RegExp(`({${dateRegex}})`, 'g');
+      convertedMessage = convertedMessage.replace(dateConvertedRegex, function (match) {
         const date = match.substring(1, match.length-1);
         return dateToTimestamp(date, offset);
       })
 
-      convertedMessage = convertedMessage.replace(/({\d{2}:\d{2}})/g, function (match) {
+      const timeConvertedRegex = new RegExp(`({${timeRegex}})`, 'gi');
+      convertedMessage = convertedMessage.replace(timeConvertedRegex, function (match) {
         const time = match.substring(1, match.length-1);
         return timeToTimestamp(time, offset);
       })
@@ -173,7 +181,7 @@ app.post('/interactions', async function (req, reply) {
       return reply.send({
         type: InteractionResponseType.CHANNEL_MESSAGE_WITH_SOURCE,
         data: {
-          content: `\`${timestamp}\``,
+          content: `Preview: ${timestamp}\nTo use: \`${timestamp}\``,
           flags: "64"
         },
       })
@@ -203,14 +211,14 @@ app.post('/interactions', async function (req, reply) {
         }
       }
 
-      const dateRegex = /^([0-2]\d|3[01])\/(0\d|1[0-2])\/\d{4}$/;
-      const timeRegex = /^[0-2]\d:[0-5]\d$/;
+      const dateConvertedRegex = new RegExp(`^${dateRegex}$`, 'g');
+      const timeConvertedRegex = new RegExp(`^${timeRegex}$`, 'gi');
       const timeZoneRegex = /^UTC([+-]\d{2,5})?$/
       const errors = [];
-      if (!dateRegex.test(date)) {
+      if (!dateConvertedRegex.test(date)) {
         errors.push(`- Date must be in the DD/MM/YYYY format! You provided ${date}`)
       }
-      if (!timeRegex.test(time)) {
+      if (!timeConvertedRegex.test(time)) {
         errors.push(`- Time must be in the HH:mm format! You provided ${time}`)
       }
       if (!timeZoneRegex.test(timezone)) {
@@ -284,7 +292,8 @@ app.listen(PORT, () => {
 });
 
 function timeToTimestamp(time, offset) {
-  const [hour, minute] = time.split(':').map(Number);
+  const time24Hour = time.endsWith("am") || time.endsWith("pm") ? convert12HourTo24HourTime(time) : time;
+  const [hour, minute] = time24Hour.split(':').map(Number);
   const now = new Date();
   let timeStamp;
   if (offset === undefined) {
@@ -297,8 +306,9 @@ function timeToTimestamp(time, offset) {
 
 function dateTimeToTimestamp(dateTime, offset, raw = false, format = "f") {
   const [datePart, timePart] = dateTime.split(' ');
+  const time24Hour = timePart.endsWith("am") || timePart.endsWith("pm") ? convert12HourTo24HourTime(timePart) : timePart;
   const [day, month, year] = datePart.split('/').map(Number);
-  const [hour, minute] = timePart.split(':').map(Number);
+  const [hour, minute] = time24Hour.split(':').map(Number);
 
   let timeStamp;
   if (offset === undefined) {
@@ -324,4 +334,28 @@ function dateToTimestamp(date, offset) {
     timeStamp = Date.UTC(year, month - 1, day, now.getHours() - offset, now.getMinutes()) / 1000;
   }
   return `<t:${timeStamp}:D>`;
+}
+
+function convert12HourTo24HourTime(timeString) {
+  let time = timeString.substring(0, timeString.length - 2);
+  if (time.endsWith(" ")) {
+    time = time.substring(0, time.length - 1);
+  }
+
+  if (timeString.endsWith("am")) {
+    const [hour, minute] = time.split(':').map(Number);
+    if (hour === 12) {
+      return "00:"+minute;
+    }
+    console.log(time)
+    return String(hour).padStart(2, '0') + ":" + minute;
+  } else if (timeString.endsWith("pm")) {
+    const [hour, minute] = time.split(':').map(Number);
+    if (hour >= 1 && hour <= 11) {
+      return (hour+12) + ":" + minute;
+    }
+    return time;
+  }
+
+  return "";
 }
